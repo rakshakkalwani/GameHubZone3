@@ -1396,7 +1396,7 @@ var vite_config_default = defineConfig({
   },
   root: path2.resolve(__dirname),
   build: {
-    outDir: path2.resolve(__dirname, "dist/public"),
+    outDir: path2.resolve(__dirname, "dist"),
     emptyOutDir: true
   }
 });
@@ -1458,13 +1458,14 @@ async function setupVite(app2, server) {
   });
 }
 function serveStatic(app2) {
-  const distPath = path3.resolve(__dirname2, "public");
+  const distPath = path3.resolve(__dirname2, "..", "dist");
   if (!fs.existsSync(distPath)) {
     throw new Error(
       `Could not find the build directory: ${distPath}, make sure to build the client first`
     );
   }
   app2.use(express2.static(distPath));
+  app2.use("/games", express2.static(path3.resolve(__dirname2, "..", "public", "games")));
   app2.use("*", (_req, res) => {
     res.sendFile(path3.resolve(distPath, "index.html"));
   });
@@ -1511,7 +1512,7 @@ app.use((req, res, next) => {
   } else {
     serveStatic(app);
   }
-  const port = 5e3;
+  const port = process.env.PORT ? parseInt(process.env.PORT) : 5001;
   server.listen({
     port,
     host: "0.0.0.0",
